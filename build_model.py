@@ -27,7 +27,7 @@ def build_model(ds, features):
     # Convert numerical labels to binary vectors
     train_y_categorical = to_categorical(train_y_numerical, num_classes=num_classes)
     test_y_categorical = to_categorical(test_y_numerical, num_classes=num_classes)
-
+    print('Building the model')
     # Create the LSTM network
     model = Sequential()
     model.add(LSTM(60, input_shape=(train_X.shape[1], features)))
@@ -56,6 +56,7 @@ def build_model(ds, features):
         keras.metrics.AUC(name='auc'),
         keras.metrics.AUC(name='prc', curve='PR'), # precision-recall curve
     ]
+    print('Compiling the model')
     # compile the model
     model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=METRICS)
     # summarize the model
