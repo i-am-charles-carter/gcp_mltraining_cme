@@ -7,6 +7,9 @@ from keras.layers import LSTM, Dense
 from keras.utils import to_categorical
 from sklearn.preprocessing import LabelEncoder
 import keras.metrics
+import time
+
+
 
 # Build the model
 def build_model(ds, features):
@@ -35,7 +38,7 @@ def build_model(ds, features):
     model.add(Dense(15, activation='relu'))
     model.add(Dense(num_classes, activation='softmax'))
 
-    tensorboard = tf.keras.callbacks.TensorBoard(log_dir="./logs")
+    tensorboard = tf.keras.callbacks.TensorBoard(log_dir=f"./logs/{time.time()}")
 
     callbacks = [
         tensorboard
@@ -65,14 +68,14 @@ def build_model(ds, features):
 
     # Fit the model
     history = model.fit(train_X, train_y_categorical, 
-            epochs=10,
+            epochs=250,
             batch_size=512, 
             validation_data=(test_X, test_y_categorical), 
             class_weight=class_weights_numerical,
             callbacks=callbacks)
     # evaluate the model
-    _, accuracy = model.evaluate(test_X, test_y_categorical, verbose=0)
-    print('Accuracy: %.2f' % (accuracy*100))
+    # _, accuracy = model.evaluate(test_X, test_y_categorical, verbose=0)
+    # print('Accuracy: %.2f' % (accuracy*100))
 
     # evaluate the model using sklearn's metrics
     y_pred = model.predict(test_X).argmax(axis=1)

@@ -60,7 +60,7 @@ def prepare_and_split_data(data, x_window_size, y_window_size, test_size=0.2):
 
 def get_data(product, x_window_size, y_window_size, test_size=0.2):
     # Load and preprocess data
-    data = pd.read_feather(r"C:\Users\charl\OneDrive\Documents\SPX500_USD_2018_2022_hf_14_21.feather")
+    data = pd.read_feather("./SPX500_USD_2018_2022_hf_14_21.feather")
     data = data.set_index("datetime")
     data = data[f'close']
     # Reformat the data so the price is in 0.25 increments

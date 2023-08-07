@@ -5,7 +5,7 @@ from build_model import build_model
 import tensorboard
 
 # Set the parameters
-window_size = 60
+window_size = 180
 features = 1
 y_window_size = 10
 test_size = 0.4
@@ -17,7 +17,7 @@ ds = get_data(product=product,
               y_window_size=y_window_size, 
               test_size=test_size)
 print('Data loaded successfully')
-# Load the model
-history, model = build_model(ds, features)
 
+# Load the model
+build_model(ds, features)
 
