@@ -64,6 +64,7 @@ def build_model(X_train, X_val, X_test, Y_train, Y_val, Y_test, class_weights, f
     # summarize the model
     model.summary()
 
+
     # Fit the model
     history = model.fit(X_train, train_y_categorical,
                         epochs=50,
