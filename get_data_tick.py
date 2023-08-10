@@ -17,14 +17,15 @@ def plot_hist(df):
     # Sum the rows
     df_diff['sum'] = df_diff.sum(axis=1)
     # Define the bin edges
-    bin_edges = [-np.inf, -0.5, 0, 0.5, np.inf]
+    # bin_edges = [-np.inf, -0.5, 0, 0.5, np.inf]
+    bin_edges = [-np.inf, 0.5, np.inf]
     # Calculate the counts for each bin
     counts, _ = np.histogram(df_diff['sum'].dropna(), bins=bin_edges)
     # Calculate the percentages
     percentages = counts / counts.sum() * 100
     # Create a DataFrame from the bin edges and counts
     df_hist = pd.DataFrame({
-        'bins': ['(-inf, -0.5)', '[-0.5, 0)', '[0, 0.5)', '[0.5, inf)'],
+        'bins': ['(-inf, 0.5)', '[0.5, inf)'],
         'counts': counts,
         'percentage': percentages
     })
@@ -61,10 +62,14 @@ def prepare_day_data(day_data, n_timesteps_in, n_timesteps_out):
 
     # Transform Y by calculating the difference, summing it, and then binning and labeling it
     Y_diff_sum = np.diff(Y, axis=1).sum(axis=1)
-    bin_labels = {0: 'Very Bearish', 1: 'Bearish', 2: 'Flat', 3: 'Bullish', 4: 'Very Bullish'}
+    bin_labels = {1: 'Very Bearish', 2: 'Bearish', 3: 'Bullish', 4: 'Very Bullish'}
     bin_edges = [-np.inf, -0.5, 0, 0.5, np.inf]
-    Y_bins = np.digitize(Y_diff_sum, bins=bin_edges)
-    Y = pd.Series(Y_bins).map(bin_labels)
+    # bin_edges = [-np.inf, 0.5, np.inf]
+    # Find the indices where Y_diff_sum belongs in the bins
+    bin_indices = np.digitize(Y_diff_sum, bins=bin_edges)
+    # Map bin indices to your custom bin labels
+    # custom_bin_labels = {1: 'Very Bearish', 2: 'Bullish'}
+    Y = np.array([bin_labels[i] for i in bin_indices])
 
     return X, Y
 
@@ -83,7 +88,7 @@ def prepare_data(data, n_timesteps_in, n_timesteps_out):
 
     # Concatenate all the data together
     X = np.concatenate(X_list)
-    Y = pd.concat(Y_list)  # Assuming Y is a pandas Series
+    Y = np.concatenate(Y_list)  # Assuming Y is a pandas Series
 
     return X, Y
 
@@ -94,10 +99,9 @@ def shuffle_and_split_data(X, Y, test_size=0.2, val_size=0.2):
 
     # Shuffle the data
     # indices = np.random.permutation(len(X))
-    Y = Y.to_numpy()
     # X = X[indices]
     # Y = Y[indices]
-    class_weights = calculate_class_weights(Y)
+    # class_weights = calculate_class_weights(Y)
     # Split the data into training, testing, and validation datasets
     test_split_idx = int(len(X) * test_size)
     val_split_idx = int(len(X) * (test_size + val_size))
@@ -123,9 +127,7 @@ def shuffle_and_split_data(X, Y, test_size=0.2, val_size=0.2):
     fig.show()
 
     return (X_train_resampled, X_val_resampled, X_test_resampled, y_train_resampled, y_val_resampled, y_test_resampled,
-            class_weights)
-
-
+            class_counts_resampled)
 
 
 

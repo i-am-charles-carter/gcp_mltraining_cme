@@ -34,7 +34,11 @@ def build_model(X_train, X_val, X_test, Y_train, Y_val, Y_test, class_weights, f
     model = Sequential()
     model.add(LSTM(60, input_shape=(X_train.shape[1], features)))
     model.add(Dense(15, activation='relu'))
-    model.add(Dense(num_classes, activation='softmax'))
+    model.add(Dense(num_classes, activation='sigmoid'))
+
+    # model = Sequential()
+    # model.add(Dense(shape=(X_train.shape[1], features)))
+    # model.add(Dense(num_classes, activation='softmax'))
 
     tensorboard = tf.keras.callbacks.TensorBoard(log_dir=f"./logs/{time.time()}")
 
@@ -43,10 +47,11 @@ def build_model(X_train, X_val, X_test, Y_train, Y_val, Y_test, class_weights, f
     ]
 
     # Set class weights
-    class_weights_numerical = {encoder.transform([key])[0]: value for key, value in class_weights.items()}
+    # class_weights_numerical = {encoder.transform([key])[0]: value for key, value in class_weights.items()}
 
     METRICS = [
         keras.metrics.CategoricalCrossentropy(name='categorical_crossentropy'),
+        # keras.metrics.BinaryCrossentropy(name='binary_crossentropy'),
         keras.metrics.MeanSquaredError(name='Brier score'),
         keras.metrics.TruePositives(name='tp'),
         keras.metrics.FalsePositives(name='fp'),
@@ -64,13 +69,11 @@ def build_model(X_train, X_val, X_test, Y_train, Y_val, Y_test, class_weights, f
     # summarize the model
     model.summary()
 
-
     # Fit the model
     history = model.fit(X_train, train_y_categorical,
                         epochs=50,
                         batch_size=512,
                         validation_data=(X_test, test_y_categorical),
-                        # class_weight=class_weights_numerical,
                         callbacks=callbacks,
                         # class_weight=class_weights_numerical,
                         verbose=0)
